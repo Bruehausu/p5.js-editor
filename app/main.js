@@ -228,6 +228,7 @@ var appConfig = {
         focus: true,
         show: false
       }, options));
+      console.log(win);
       return win;
     },
 
