@@ -42,7 +42,7 @@ module.exports = {
     this.$on('settings-changed', this.updateSettings);
 
     this.ace = window.ace = ace.edit('editor');
-    this.ace.setTheme('ace/theme/tomorrow');
+    this.ace.setTheme(['ace','theme','tomorrow'].join(Path.sep));
     this.ace.setReadOnly(true);
 
     this.customizeCommands();
@@ -52,7 +52,7 @@ module.exports = {
     openFile: function(fileObject) {
       var session = _.findWhere(this.sessions, {path: fileObject.path});
       if (!session) {
-        var doc = ace.createEditSession(fileObject.contents, "ace/mode/" + modes[fileObject.ext]);
+        var doc = ace.createEditSession(fileObject.contents, (["ace","mode",""].join(Path.sep)) + modes[fileObject.ext]);
 
         var self = this;
         doc.on('change', function() {

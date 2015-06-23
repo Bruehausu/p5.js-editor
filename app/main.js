@@ -10,7 +10,8 @@ var Vue = require('vue');
 var $ = require('jquery');
 var _ = require('underscore');
 var AutoLinker = require('autolinker');
-var keybindings = require('./keybindings');
+//var s = ['.','keybindings'].join(Path.sep);
+var keybindings = require('./keybindings.js');
 var Files = require('./files');
 var menu = require('./menu');
 var windowstate = require('./windowstate');
@@ -70,6 +71,19 @@ var appConfig = {
     updater.check();
     keybindings.setup(this);
     menu.setup(this);
+
+    /*console.log(process.cwd());
+    //console.log(Path.normalize(['.','keybindings'].join(Path.sep)));
+    //console.log(Path.normalize('../app/keybindings'));
+    console.log(Path.join('..','app','keybindings'));
+    console.log(Path.join('.','keybindings'));
+    console.log(Path.resolve('keybindings'));
+    console.log(Path.resolve('.','keybindings'));
+    console.log(Path.resolve('./keybindings'));
+    console.log(Path.resolve('..', 'keybindings'));
+    console.log(Path.resolve('..', 'app', 'keybindings.js'));
+    */console.log(Path.join('mode_assets\\p5\\example_assets', 'keybindings'));
+    
 
     this.setupFileListener();
     this.setupCloseHandler();
@@ -228,7 +242,7 @@ var appConfig = {
         focus: true,
         show: false
       }, options));
-      console.log(win);
+      //console.log(win);
       return win;
     },
 
@@ -347,7 +361,7 @@ var appConfig = {
         // if the we are saving inside the project path just open the new file
         // otherwise open a new window
         fs.writeFileSync(file, this.currentFile.contents, "utf8");
-        if ((Path.dirname(file) + '/').indexOf(this.projectPath + '/') > -1) {
+        if ((Path.dirname(file) + Path.sep).indexOf(this.projectPath + Path.sep) > -1) {
           var f = Files.setup(file);
           Files.addToTree(f, this.files, this.projectPath);
           this.openFile(file);
@@ -467,7 +481,7 @@ var appConfig = {
 
     // create a new file and save it in the project path
     newFile: function(basepath) {
-      var title = prompt('Choose a file name and type: \nSupported types: ' + this.fileTypes.toString()).replace(/ /g,'');
+      var title = prompt('Choose a file name and type: \nSupported types: ' + this.fileTypes.join(', '));
       var dotSplit = title.split(".");
       var re = /(?:\.([^.]+))?$/;
 

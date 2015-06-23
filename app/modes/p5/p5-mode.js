@@ -9,7 +9,7 @@ var Files = require('../../files');
 module.exports = {
   newProject: function() {
     //copy the empty project folder to a temporary directory
-    var emptyProject = 'mode_assets/p5/empty_project';
+    var emptyProject = ['mode_assets','p5','empty_project'].join(Path.sep);
     var tempProject = Path.join(os.tmpdir(), 'p5' + Date.now(), 'Untitled');
     wrench.mkdirSyncRecursive(tempProject);
     wrench.copyDirSyncRecursive(emptyProject, tempProject, {
@@ -32,7 +32,7 @@ module.exports = {
 
   launchExample: function(examplePath) {
     //copy the empty project folder to a temporary directory
-    var emptyProject = 'mode_assets/p5/empty_project';
+    var emptyProject = ['mode_assets','p5','empty_project'].join(Path.sep);
     var tempProjectPath = Path.join(os.tmpdir(), 'p5' + Date.now(), Files.cleanExampleName(examplePath));
     wrench.mkdirSyncRecursive(tempProjectPath);
     wrench.copyDirSyncRecursive(emptyProject, tempProjectPath, {
@@ -42,13 +42,14 @@ module.exports = {
     });
     // replace contents of sketch.js with the requested example
     var sketchContents = fs.readFileSync(examplePath, {encoding: 'utf8'});
-    var assets = sketchContents.match(/['"]assets\/(.*?)['"]/g);
+    var assets = process.platform === 'win32' ? sketchContents.match(/['"]assets\\(.*?)['"]/g) 
+                                              : sketchContents.match(/['"]assets\/(.*?)['"]/g);
     if (assets) {
       var assetsDir = Path.join(tempProjectPath, 'assets');
       wrench.mkdirSyncRecursive(assetsDir);
       assets.forEach(function(a){
-        a = a.replace(/(assets\/)|['"]/g, '');
-        var originalAsset = Path.join('mode_assets/p5/example_assets', a);
+        a = a.replace(/(assets\/)|(assets\\)|['"]/g, '');
+        var originalAsset = Path.join(['mode_assets', 'p5' , 'example_assets'].join(Path.sep), a);
         var destAsset = Path.join(assetsDir, a);
         fs.createReadStream(originalAsset).pipe(fs.createWriteStream(destAsset));
       });
@@ -102,7 +103,8 @@ module.exports = {
         if (self.settings.runInBrowser) {
           gui.Shell.openExternal(url);
         } else {
-          self.outputWindow = self.newWindow(url, {toolbar: true, 'inject-js-start': 'js/debug-console.js'}, 
+          var debug_code = ['js','debug-console.js'].join(Path.sep);
+          self.outputWindow = self.newWindow(url, {toolbar: true, 'inject-js-start': debug_code}, 
                                              self.outX, self.outY);
           self.outputWindow.on('document-start', function(){
             self.outputWindow.show();
